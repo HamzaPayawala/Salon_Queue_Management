@@ -1,6 +1,6 @@
 # Lumière Salon Queue
 
-**Live demo:** [_Pending Vercel deployment — replace this line with the public URL before submission._](https://salonqueuemanagement.vercel.app?utm_source=chatgpt.com)
+**Live demo:** https://salonqueuemanagement.vercel.app?utm_source=chatgpt.com
 
 A responsive, bilingual (English / ગુજરાતી) live queue for one salon. Customers join from their phone or at reception, track their token, position and estimated wait, and are notified when it is their turn. Reception, barbers, the owner and the waiting-area TV all read and write the **same shared queue state**.
 
