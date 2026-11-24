@@ -1,15 +1,54 @@
-// Step 2 smoke test: verifies React + Vite + Tailwind theme are wired correctly.
-// Step 3 replaces this with the router, language provider and shared layout.
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { Compass } from 'lucide-react'
+import { AppShell } from './components/AppShell.jsx'
+import { PinGate } from './components/PinGate.jsx'
+import { Button, Card, EmptyState, PageHeader, ToastProvider } from './components/ui.jsx'
+import { LanguageProvider, useLanguage } from './context/LanguageContext.jsx'
+import { Home } from './screens/Home.jsx'
+import { Join } from './screens/Join.jsx'
+import { MyStatus } from './screens/MyStatus.jsx'
+import { Reception } from './screens/Reception.jsx'
+import { Barber } from './screens/Barber.jsx'
+import { WaitingTV } from './screens/WaitingTV.jsx'
+import { Owner } from './screens/Owner.jsx'
+
+function NotFound() {
+  const { t } = useLanguage()
+  return (
+    <div className="mx-auto max-w-lg">
+      <PageHeader title={t('common.notFoundTitle')} subtitle={t('common.notFoundBody')} />
+      <Card>
+        <EmptyState
+          icon={Compass}
+          title={t('common.notFoundTitle')}
+          description={t('common.notFoundBody')}
+          action={<Link to="/"><Button>{t('common.backHome')}</Button></Link>}
+        />
+      </Card>
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-charcoal-800 px-6">
-      <div className="rounded-2xl border border-charcoal-700 bg-charcoal-950 p-8 text-center shadow-xl">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gold text-xl font-extrabold text-charcoal-950">
-          S
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight">Salon Queue Management</h1>
-        <p className="mt-2 text-sm text-slate-400">Project scaffolding is ready.</p>
-      </div>
-    </main>
+    <LanguageProvider>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/join" element={<Join />} />
+              <Route path="/status" element={<MyStatus />} />
+              <Route path="/status/:token" element={<MyStatus />} />
+              <Route path="/reception" element={<PinGate role="reception"><Reception /></PinGate>} />
+              <Route path="/barber/:barberId" element={<PinGate role="barber"><Barber /></PinGate>} />
+              <Route path="/tv" element={<WaitingTV />} />
+              <Route path="/owner" element={<PinGate role="owner"><Owner /></PinGate>} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
+    </LanguageProvider>
   )
 }

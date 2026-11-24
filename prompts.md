@@ -333,3 +333,19 @@ Remember: I need a polished, functional application that I can demonstrate and e
 - Review: "Approved — start Step 2"
 
 **Action taken:** Step 2 scaffolding began (Vite + React + Tailwind, Git repository, dependency audit).
+
+---
+
+## Prompt 3 — 24 November 2026
+
+**Source:** Project owner, continuation after the conversation checkpoint  
+**Request:** Continue the documented implementation from Step 6 (Reception Dashboard) through the remaining steps without re-asking approved decisions.  
+**Outcome:** Steps 6–9 completed and browser-tested; Steps 10–13 in progress. Queue engine fixes, bilingual key parity and local/Firestore store verification carried out.
+
+---
+
+## Prompt 4 — 24 November 2026
+
+**Source:** Project owner, continuation after the checkpoint  
+**Request:** Finish Steps 10–13: verify all queue rules and edge cases, write the test log, polish responsive/touch issues, prepare README/screenshots/reflection and commit the milestone.  
+**Outcome:** Rule checks and all 18 checklist cases completed; Join cut-off and 44 px touch-target bugs found and fixed; test log, reflection, README and screenshots created. Deployment link, demo video and GitHub push remain outstanding because no credentials were provided."
