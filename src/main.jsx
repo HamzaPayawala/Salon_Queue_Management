@@ -4,7 +4,7 @@ import App from './App.jsx'
 import { initCloud } from './queue/queueStore.js'
 import './index.css'
 
-// Firestore is used only when .env is configured; otherwise local mode stays active.
+// Firestore is used only when .env.local is configured; otherwise local mode stays active.
 initCloud()
 
 ReactDOM.createRoot(document.getElementById('root')).render(

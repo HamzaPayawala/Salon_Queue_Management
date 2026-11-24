@@ -35,11 +35,15 @@ export function Logo({ compact = false }) {
 function ConnectionBadge() {
   const { t } = useLanguage()
   useQueue() // re-render when connection mode changes
-  const { mode } = getConnection()
+  const { mode, cloudError } = getConnection()
+  const failed = Boolean(cloudError)
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${mode === 'cloud' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-slate-600 bg-slate-500/10 text-slate-400'}`}>
-      {mode === 'cloud' ? <Wifi size={13} /> : <WifiOff size={13} />}
-      {t(mode === 'cloud' ? 'common.live' : 'common.offline')}
+    <span
+      title={cloudError || undefined}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${failed ? 'border-red-500/40 bg-red-500/10 text-red-300' : mode === 'cloud' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-slate-600 bg-slate-500/10 text-slate-400'}`}
+    >
+      {mode === 'cloud' && !failed ? <Wifi size={13} /> : <WifiOff size={13} />}
+      {failed ? t('common.cloudError') : t(mode === 'cloud' ? 'common.live' : 'common.offline')}
     </span>
   )
 }

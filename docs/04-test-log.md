@@ -35,3 +35,5 @@ Results use the 18 cases in `docs/03-flows-rules.md` §11. Token numbers below c
 - Owner settings browser-tested: service add/edit/delete/enable, barber add/remove/duty/break, salon toggles, hours validation, stats/activity, two-step reset.
 - Multi-window test repeated after the final engine/store changes.
 - Screenshots of all seven screens are in `docs/screenshots/`.
+- Firestore integration (24 Nov 2026): adapter now signs in anonymously before reading/writing `salons/default/queue/state`; rules in `firestore.rules` require auth, validate the document and deny deletes. Local fallback remains active while the API key is blank and Anonymous sign-in/rules are not yet configured in the project.
+- After integration, `npm run build` passed and all seven routes were rechecked from the production preview: correct headings, `Local mode` badge, no console errors. EN/Gu key parity remained 283/283; `npm run check:rules` remained 9/9. Cloud mode itself could not be exercised until the web API key is supplied and Anonymous sign-in/rules are published manually.

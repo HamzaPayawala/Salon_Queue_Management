@@ -348,4 +348,12 @@ Remember: I need a polished, functional application that I can demonstrate and e
 
 **Source:** Project owner, continuation after the checkpoint  
 **Request:** Finish Steps 10–13: verify all queue rules and edge cases, write the test log, polish responsive/touch issues, prepare README/screenshots/reflection and commit the milestone.  
-**Outcome:** Rule checks and all 18 checklist cases completed; Join cut-off and 44 px touch-target bugs found and fixed; test log, reflection, README and screenshots created. Deployment link, demo video and GitHub push remain outstanding because no credentials were provided."
+**Outcome:** Rule checks and all 18 checklist cases completed; Join cut-off and 44 px touch-target bugs found and fixed; test log, reflection, README and screenshots created. Deployment link, demo video and GitHub push remain outstanding because no credentials were provided.
+
+---
+
+## Prompt 5 — 24 November 2026
+
+**Source:** Project owner  
+**Request:** Integrate Firebase Firestore into the existing app using `.env.local`, keep all seven screens and local fallback, add Firestore security rules, update README, and report manual steps. Provided project ID `salon-queue-management-4b254`, authDomain, storage bucket, messaging sender ID and app ID; API key was to come from the Firebase web app config but was not included in the message.  
+**Outcome:** Firestore adapter hardened with anonymous sign-in and validated security rules; `.env.local` created with the provided values and an empty API-key placeholder for manual entry; README, test log and translation keys updated. Build passed, rule checks passed 9/9 and all seven routes were rechecked in local fallback mode with no console errors. Cloud mode awaits the manual API key, Anonymous sign-in toggle and rules publication."

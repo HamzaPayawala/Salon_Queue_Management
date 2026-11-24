@@ -6,6 +6,7 @@ const gu = {
   'common.notFoundBody': 'આ લિંક કોઈ કતાર સ્ક્રીન તરફ નિર્દેશ કરતી નથી.',
   'common.live': 'લાઇવ',
   'common.offline': 'લોકલ મોડ',
+  'common.cloudError': 'ક્લાઉડ ભૂલ — લોકલ મોડ વાપરી રહ્યા છીએ',
   'common.reconnecting': 'ફરીથી કનેક્ટ થઈ રહ્યું છે…',
   'common.retry': 'ફરી પ્રયાસ',
   'common.cancel': 'રદ કરો',

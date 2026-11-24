@@ -24,6 +24,7 @@ let mode = 'local'
 let cloudRef = null
 let unsubscribeCloud = null
 let cloudError = null
+let cloudInitPromise = null
 const listeners = new Set()
 const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CHANNEL_NAME) : null
 
@@ -90,6 +91,7 @@ export function dispatch(action) {
       .then(({ setDoc }) => setDoc(cloudRef, result.state))
       .catch((error) => {
         cloudError = error?.message || 'Cloud write failed'
+        emit()
       })
   }
   return result
@@ -99,8 +101,13 @@ export function resetDemo() {
   return dispatch(() => ({ ok: true, state: createSeedState() }))
 }
 
-// Called once from main.jsx. Absent env vars intentionally keep local mode.
-export async function initCloud() {
+// Called once from main.jsx. Missing or invalid config keeps local mode active.
+export function initCloud() {
+  if (!cloudInitPromise) cloudInitPromise = connectCloud()
+  return cloudInitPromise
+}
+
+async function connectCloud() {
   const config = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -109,27 +116,62 @@ export async function initCloud() {
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
   }
-  if (!config.apiKey || !config.projectId || !config.appId) return
+  const required = ['apiKey', 'authDomain', 'projectId', 'appId'].filter((key) => !config[key])
+  if (required.length) {
+    cloudError = null
+    return { mode: 'local', reason: 'not-configured', missing: required }
+  }
 
   try {
-    const { initializeApp } = await import('firebase/app')
+    const { getApp, getApps, initializeApp } = await import('firebase/app')
+    // Anonymous auth gives every browser an identity so Firestore rules never
+    // need `allow write: if true`. Enable it in Firebase > Authentication.
+    const { getAuth, signInAnonymously } = await import('firebase/auth')
     const { getFirestore, doc, setDoc, getDoc, onSnapshot } = await import('firebase/firestore')
-    const db = getFirestore(initializeApp(config))
+
+    const appName = 'salonQueue'
+    const app = getApps().some((item) => item.name === appName)
+      ? getApp(appName)
+      : initializeApp(config, appName)
+
+    const auth = getAuth(app)
+    if (!auth.currentUser) await signInAnonymously(auth)
+
+    const db = getFirestore(app)
     const ref = doc(db, 'salons', 'default', 'queue', 'state')
     const snapshot = await getDoc(ref)
-    if (!snapshot.exists()) await setDoc(ref, state)
-    else applyRemote(snapshot.data())
+    const remote = snapshot.exists() ? snapshot.data() : null
+    if (!remote || (remote.updatedAt ?? 0) < (state.updatedAt ?? 0)) {
+      await setDoc(ref, state)
+    } else {
+      applyRemote(remote)
+    }
 
     cloudRef = ref
-    unsubscribeCloud = onSnapshot(ref, (next) => {
-      if (next.exists()) applyRemote(next.data())
-    })
+    unsubscribeCloud = onSnapshot(
+      ref,
+      (next) => {
+        if (next.exists()) applyRemote(next.data())
+      },
+      (error) => {
+        cloudError = error?.message || 'Cloud sync failed'
+        if (unsubscribeCloud) unsubscribeCloud()
+        unsubscribeCloud = null
+        cloudRef = null
+        mode = 'local'
+        emit()
+      },
+    )
+    cloudError = null
     mode = 'cloud'
     emit()
+    return { mode: 'cloud' }
   } catch (error) {
     cloudError = error?.message || 'Cloud connection failed'
+    cloudRef = null
     mode = 'local'
     emit()
+    return { mode: 'local', reason: 'error', error: cloudError }
   }
 }
 
@@ -137,5 +179,8 @@ export function stopCloud() {
   if (unsubscribeCloud) unsubscribeCloud()
   unsubscribeCloud = null
   cloudRef = null
+  cloudError = null
   mode = 'local'
+  cloudInitPromise = null
+  emit()
 }

@@ -6,6 +6,7 @@ const en = {
   'common.notFoundBody': 'That link does not point to a queue screen.',
   'common.live': 'Live',
   'common.offline': 'Local mode',
+  'common.cloudError': 'Cloud error — using local mode',
   'common.reconnecting': 'Reconnecting…',
   'common.retry': 'Retry',
   'common.cancel': 'Cancel',

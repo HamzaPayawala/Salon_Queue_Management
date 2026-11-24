@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// Salon Queue Management — one shared queue document.
+// The demo has no staff accounts, so the app signs each browser in anonymously.
+// Rules require that sign-in and validate the document shape. They deliberately
+// deny all other paths and deny deletes.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validQueueState() {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+          'version', 'salon', 'services', 'barbers',
+          'entries', 'lastCall', 'nextToken', 'updatedAt'
+        ])
+        && data.version == 1
+        && data.salon is map
+        && data.services is list
+        && data.services.size() <= 50
+        && data.barbers is list
+        && data.barbers.size() <= 20
+        && data.entries is list
+        && data.entries.size() <= 500
+        && data.lastCall is map
+        && data.nextToken is int
+        && data.nextToken >= 0
+        && data.updatedAt is int
+        && data.updatedAt >= 0;
+    }
+
+    match /salons/{salonId}/queue/{docId} {
+      allow read: if signedIn()
+        && salonId == 'default'
+        && docId == 'state';
+
+      allow create: if signedIn()
+        && salonId == 'default'
+        && docId == 'state'
+        && validQueueState();
+
+      allow update: if signedIn()
+        && salonId == 'default'
+        && docId == 'state'
+        && validQueueState()
+        && request.resource.data.updatedAt >= resource.data.updatedAt;
+
+      allow delete: if false;
+    }
+
+    // Nothing else in the database is readable or writable through this app.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
